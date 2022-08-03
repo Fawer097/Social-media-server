@@ -1,0 +1,32 @@
+{
+  "name": "social-media-project",
+  "version": "1.0.0",
+  "description": "Final project - social media",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "client": "npm start --prefix \"../client\"",
+    "dev": "concurrently \"npm run server\"  \"npm run client\""
+  },
+  "keywords": [
+    "Social",
+    "Media",
+    "FERN",
+    "ReactJS",
+    "NodeJS"
+  ],
+  "author": "Vadzim Domnenka",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "firebase-admin": "^11.0.0"
+  }
+}

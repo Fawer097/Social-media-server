@@ -1,16 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import signUpRouter from './routes/signUp.js';
-import firestoreRouter from './routes/firestore.js';
+import cookieParser from 'cookie-parser';
+import router from './router/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL,
+  })
+);
 app.use(express.json());
-app.use(signUpRouter);
-app.use(firestoreRouter);
+app.use(cookieParser());
+app.use('/api', router);
 
 const start = () => {
   try {

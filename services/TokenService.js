@@ -1,11 +1,10 @@
-import { fieldValue } from '../firebase/firebaseInit.js';
 import jwt from 'jsonwebtoken';
-import { db } from '../firebase/firebaseInit.js';
+import DbService from './DbService.js';
 
 class TokenService {
   generateTokens(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: '15m',
+      expiresIn: '30m',
     });
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
       expiresIn: '30d',
@@ -21,7 +20,7 @@ class TokenService {
       const tokenData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       return tokenData;
     } catch (error) {
-      return null;
+      throw new Error('This user is not found');
     }
   }
 
@@ -30,34 +29,32 @@ class TokenService {
       const tokenData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
       return tokenData;
     } catch (error) {
-      return null;
+      throw new Error('This user is not found');
     }
   }
 
   async findToken(refreshToken) {
-    const dbData = await db
-      .collection('Users')
-      .where('refreshToken', '==', refreshToken)
-      .get();
-    if (dbData.empty) {
+    const data = await DbService.searchData(
+      'Users',
+      'refreshToken',
+      '==',
+      refreshToken
+    );
+    if (!data) {
       return null;
     }
-    let token;
-    dbData.forEach((data) => (token = data.data().refreshToken));
+    const token = data[0];
     return token;
   }
 
   async saveToken(email, refreshToken) {
-    await db
-      .collection('Users')
-      .doc(email)
-      .set({ refreshToken }, { merge: true });
+    await DbService.setData('Users', email, { refreshToken });
+    return;
   }
 
   async removeToken(email) {
-    await db.collection('Users').doc(email).update({
-      refreshToken: fieldValue.delete(),
-    });
+    await DbService.deleteData('Users', email, 'refreshToken');
+    return;
   }
 }
 

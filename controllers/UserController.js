@@ -4,9 +4,9 @@ class UserController {
   async signUp(req, res, next) {
     try {
       await UserService.signUp(req.body);
-      return res.json('User successfully created');
+      return res.status(201).json('User successfully created');
     } catch (error) {
-      return res.status(401).json(error.message);
+      return res.status(400).json(error.message);
     }
   }
 
@@ -36,6 +36,14 @@ class UserController {
     }
   }
 
+  async verifyToken(req, res, next) {
+    try {
+      return res.json(req.userData);
+    } catch (error) {
+      return res.status(401).json(error.message);
+    }
+  }
+
   async refreshToken(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
@@ -46,14 +54,6 @@ class UserController {
         secure: true,
       });
       return res.json(userData);
-    } catch (error) {
-      return res.status(401).json(error.message);
-    }
-  }
-
-  async userData(req, res, next) {
-    try {
-      return res.json(req.user);
     } catch (error) {
       return res.status(401).json(error.message);
     }

@@ -1,8 +1,9 @@
-import { db } from '../firebase/firebaseInit.js';
 import { userDataValidation } from '../validation/validation.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import TokenService from './TokenService.js';
+import DbService from './DbService.js';
+import DataService from './DataService.js';
 
 class UserService {
   async signUp(data) {
@@ -15,22 +16,21 @@ class UserService {
       throw new Error('Passwords do not match');
     }
 
-    const candidate = await db.collection('Users').doc(data.email).get();
-    if (candidate.data()) {
+    const candidate = await DbService.getData('Users', data.email);
+    if (candidate) {
       throw new Error('This user is already registered');
     }
 
     const hashPassword = bcrypt.hashSync(data.confirmPassword, 5);
     delete data.createPassword;
     delete data.confirmPassword;
-    const userData = { ...data, uid: uuidv4(), password: hashPassword };
+    const dataForDb = { ...data, uid: uuidv4(), password: hashPassword };
 
-    await db.collection('Users').doc(data.email).set(userData);
+    await DbService.setData('Users', data.email, dataForDb);
   }
 
   async signIn(email, password) {
-    const dbData = await db.collection('Users').doc(email).get();
-    const userData = dbData.data();
+    const userData = await DbService.getData('Users', email);
     if (!userData) {
       throw new Error('This user is not found');
     }
@@ -39,11 +39,9 @@ class UserService {
     if (!validPassword) {
       throw new Error('Invalid password');
     }
-    delete userData.password;
-    delete userData.refreshToken;
-    const tokens = TokenService.generateTokens(userData);
+    const tokens = TokenService.generateTokens(DataService.tokenData(userData));
     await TokenService.saveToken(email, tokens.refreshToken);
-    return { ...tokens, userData };
+    return { ...tokens, userData: DataService.clientData(userData) };
   }
 
   async logout(email) {
@@ -56,13 +54,10 @@ class UserService {
     }
     const tokenData = TokenService.validateRefreshToken(refreshToken);
     const tokenFromDb = await TokenService.findToken(refreshToken);
-    const userDbData = await db.collection('Users').doc(tokenData.email).get();
-    const userData = userDbData.data();
-    delete userData.password;
-    delete userData.refreshToken;
-    const tokens = TokenService.generateTokens(userData);
+    const userData = await DbService.getData('Users', tokenData.email);
+    const tokens = TokenService.generateTokens(DataService.tokenData(userData));
     await TokenService.saveToken(userData.email, tokens.refreshToken);
-    return { ...tokens, userData };
+    return tokens;
   }
 }
 

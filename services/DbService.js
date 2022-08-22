@@ -1,15 +1,15 @@
 import { db, fieldValue } from '../firebase/firebaseInit.js';
 
-class DbService {
+const DbService = {
   async setData(coll, doc, data) {
     await db.collection(coll).doc(doc).set(data, { merge: true });
     return;
-  }
+  },
 
   async getData(coll, doc) {
     const data = await db.collection(coll).doc(doc).get();
     return data.data();
-  }
+  },
 
   async searchData(coll, key, operator, value) {
     const data = await db.collection(coll).where(key, operator, value).get();
@@ -21,7 +21,7 @@ class DbService {
       result.push(data.data()[key]);
     });
     return result;
-  }
+  },
 
   async deleteData(coll, doc, key) {
     await db
@@ -31,7 +31,7 @@ class DbService {
         [key]: fieldValue.delete(),
       });
     return;
-  }
-}
+  },
+};
 
-export default new DbService();
+export default DbService;

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import DbService from './DbService.js';
 
-class TokenService {
+const TokenService = {
   generateTokens(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
       expiresIn: '30m',
@@ -13,7 +13,7 @@ class TokenService {
       accessToken,
       refreshToken,
     };
-  }
+  },
 
   validateAccessToken(token) {
     try {
@@ -22,7 +22,7 @@ class TokenService {
     } catch (error) {
       throw new Error('This user is not found');
     }
-  }
+  },
 
   validateRefreshToken(token) {
     try {
@@ -31,7 +31,7 @@ class TokenService {
     } catch (error) {
       throw new Error('This user is not found');
     }
-  }
+  },
 
   async findToken(refreshToken) {
     const data = await DbService.searchData(
@@ -45,17 +45,17 @@ class TokenService {
     }
     const token = data[0];
     return token;
-  }
+  },
 
   async saveToken(email, refreshToken) {
     await DbService.setData('Users', email, { refreshToken });
     return;
-  }
+  },
 
   async removeToken(email) {
     await DbService.deleteData('Users', email, 'refreshToken');
     return;
-  }
-}
+  },
+};
 
-export default new TokenService();
+export default TokenService;

@@ -5,7 +5,7 @@ import TokenService from './TokenService.js';
 import DbService from './DbService.js';
 import DataService from './DataService.js';
 
-class UserService {
+const UserService = {
   async signUp(data) {
     const { error } = userDataValidation(data);
     if (error) {
@@ -27,7 +27,7 @@ class UserService {
     const dataForDb = { ...data, uid: uuidv4(), password: hashPassword };
 
     await DbService.setData('Users', data.email, dataForDb);
-  }
+  },
 
   async signIn(email, password) {
     const userData = await DbService.getData('Users', email);
@@ -42,11 +42,11 @@ class UserService {
     const tokens = TokenService.generateTokens(DataService.tokenData(userData));
     await TokenService.saveToken(email, tokens.refreshToken);
     return { ...tokens, userData: DataService.clientData(userData) };
-  }
+  },
 
   async logout(email) {
     await TokenService.removeToken(email);
-  }
+  },
 
   async refresh(refreshToken) {
     if (!refreshToken) {
@@ -58,7 +58,7 @@ class UserService {
     const tokens = TokenService.generateTokens(DataService.tokenData(userData));
     await TokenService.saveToken(userData.email, tokens.refreshToken);
     return tokens;
-  }
-}
+  },
+};
 
-export default new UserService();
+export default UserService;

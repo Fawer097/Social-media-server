@@ -1,6 +1,6 @@
 import UserService from '../services/UserService.js';
 
-class UserController {
+const UserController = {
   async signUp(req, res, next) {
     try {
       await UserService.signUp(req.body);
@@ -8,7 +8,7 @@ class UserController {
     } catch (error) {
       return res.status(400).json(error.message);
     }
-  }
+  },
 
   async signIn(req, res, next) {
     try {
@@ -23,7 +23,7 @@ class UserController {
     } catch (error) {
       return res.status(401).json(error.message);
     }
-  }
+  },
 
   async logout(req, res, next) {
     try {
@@ -34,7 +34,7 @@ class UserController {
     } catch (error) {
       return res.status(401).json(error.message);
     }
-  }
+  },
 
   async verifyToken(req, res, next) {
     try {
@@ -42,7 +42,7 @@ class UserController {
     } catch (error) {
       return res.status(401).json(error.message);
     }
-  }
+  },
 
   async refreshToken(req, res, next) {
     try {
@@ -57,7 +57,7 @@ class UserController {
     } catch (error) {
       return res.status(401).json(error.message);
     }
-  }
-}
+  },
+};
 
-export default new UserController();
+export default UserController;

@@ -13,7 +13,7 @@ export const verifyToken = async (req, res, next) => {
       throw new Error('User not authorized');
     }
     const tokenData = TokenService.validateAccessToken(accessToken);
-    const userData = await DbService.getData('Users', tokenData.email);
+    const userData = await DbService.getData('Users', tokenData.uid);
     req.userData = DataService.clientData(userData);
     next();
   } catch (error) {

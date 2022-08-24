@@ -33,27 +33,13 @@ const TokenService = {
     }
   },
 
-  async findToken(refreshToken) {
-    const data = await DbService.searchData(
-      'Users',
-      'refreshToken',
-      '==',
-      refreshToken
-    );
-    if (!data) {
-      return null;
-    }
-    const token = data[0];
-    return token;
-  },
-
-  async saveToken(email, refreshToken) {
-    await DbService.setData('Users', email, { refreshToken });
+  async saveToken(uid, refreshToken) {
+    await DbService.setData('Users', uid, { refreshToken });
     return;
   },
 
-  async removeToken(email) {
-    await DbService.deleteData('Users', email, 'refreshToken');
+  async removeToken(uid) {
+    await DbService.deleteData('Users', uid, 'refreshToken');
     return;
   },
 };

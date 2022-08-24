@@ -16,7 +16,12 @@ const UserService = {
       throw new Error('Passwords do not match');
     }
 
-    const candidate = await DbService.getData('Users', data.email);
+    const candidate = await DbService.searchData(
+      'Users',
+      'email',
+      '==',
+      data.email
+    );
     if (candidate) {
       throw new Error('This user is already registered');
     }
@@ -24,40 +29,49 @@ const UserService = {
     const hashPassword = bcrypt.hashSync(data.confirmPassword, 5);
     delete data.createPassword;
     delete data.confirmPassword;
-    const dataForDb = { ...data, uid: uuidv4(), password: hashPassword };
+    const dbData = { ...data, uid: uuidv4(), password: hashPassword };
 
-    await DbService.setData('Users', data.email, dataForDb);
+    await DbService.setData('Users', dbData.uid, dbData);
+    return;
   },
 
   async signIn(email, password) {
-    const userData = await DbService.getData('Users', email);
-    if (!userData) {
+    const dbDataArr = await DbService.searchData('Users', 'email', '==', email);
+    if (!dbDataArr) {
       throw new Error('This user is not found');
     }
+    const uid = dbDataArr[0].uid;
+    const userData = await DbService.getData('Users', uid);
     const hashPassword = userData.password;
     const validPassword = bcrypt.compareSync(password, hashPassword);
     if (!validPassword) {
       throw new Error('Invalid password');
     }
     const tokens = TokenService.generateTokens(DataService.tokenData(userData));
-    await TokenService.saveToken(email, tokens.refreshToken);
+    await TokenService.saveToken(uid, tokens.refreshToken);
     return { ...tokens, userData: DataService.clientData(userData) };
   },
 
-  async logout(email) {
-    await TokenService.removeToken(email);
+  async logout(uid) {
+    await TokenService.removeToken(uid);
+    return;
   },
 
-  async refresh(refreshToken) {
+  async refreshTokens(refreshToken) {
     if (!refreshToken) {
       throw new Error('This user is not found');
     }
     const tokenData = TokenService.validateRefreshToken(refreshToken);
-    const tokenFromDb = await TokenService.findToken(refreshToken);
-    const userData = await DbService.getData('Users', tokenData.email);
+    const userData = await DbService.getData('Users', tokenData.uid);
     const tokens = TokenService.generateTokens(DataService.tokenData(userData));
-    await TokenService.saveToken(userData.email, tokens.refreshToken);
+    await TokenService.saveToken(userData.uid, tokens.refreshToken);
     return tokens;
+  },
+
+  async updateUserData(uid, data) {
+    await DbService.setData('Users', uid, data);
+    const userData = await DbService.getData('Users', uid);
+    return DataService.clientData(userData);
   },
 };
 

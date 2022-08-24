@@ -18,7 +18,7 @@ const DbService = {
     }
     let result = [];
     data.forEach((data) => {
-      result.push(data.data()[key]);
+      result.push(data.data());
     });
     return result;
   },

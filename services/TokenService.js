@@ -20,7 +20,7 @@ const TokenService = {
       const tokenData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
       return tokenData;
     } catch (error) {
-      throw new Error('This user is not found');
+      throw new Error('This user is not found.');
     }
   },
 
@@ -29,7 +29,7 @@ const TokenService = {
       const tokenData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
       return tokenData;
     } catch (error) {
-      throw new Error('This user is not found');
+      throw new Error('This user is not found.');
     }
   },
 

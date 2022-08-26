@@ -4,7 +4,7 @@ const UserController = {
   async signUp(req, res, next) {
     try {
       await UserService.signUp(req.body);
-      return res.status(201).json('User successfully created');
+      return res.status(201).json();
     } catch (error) {
       return res.status(400).json(error.message);
     }
@@ -47,13 +47,13 @@ const UserController = {
   async refreshToken(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      const tokens = await UserService.refreshTokens(refreshToken);
-      res.cookie('refreshToken', tokens.refreshToken, {
+      const data = await UserService.refreshTokens(refreshToken);
+      res.cookie('refreshToken', data.tokens.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         secure: true,
       });
-      return res.json(tokens);
+      return res.json(data);
     } catch (error) {
       return res.status(401).json(error.message);
     }

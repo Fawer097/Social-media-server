@@ -16,16 +16,6 @@ const UserService = {
       throw new Error('Passwords do not match.');
     }
 
-    const candidate = await DbService.searchData(
-      'Users',
-      'email',
-      '==',
-      data.email
-    );
-    if (candidate) {
-      throw new Error('This email address is already in use by another user.');
-    }
-
     const hashPassword = bcrypt.hashSync(data.confirmPassword, 5);
     delete data.createPassword;
     delete data.confirmPassword;
@@ -35,21 +25,11 @@ const UserService = {
     return;
   },
 
-  async signIn(email, password) {
-    const dbDataArr = await DbService.searchData('Users', 'email', '==', email);
-    if (!dbDataArr) {
-      throw new Error('This user is not found.');
-    }
-    const uid = dbDataArr[0].uid;
-    const userData = await DbService.getData('Users', uid);
-    const hashPassword = userData.password;
-    const validPassword = bcrypt.compareSync(password, hashPassword);
-    if (!validPassword) {
-      throw new Error('Invalid password!');
-    }
-    const tokens = TokenService.generateTokens(DataService.tokenData(userData));
+  async signIn(uid) {
+    const dbData = await DbService.getData('Users', uid);
+    const tokens = TokenService.generateTokens({ uid: dbData.uid });
     await TokenService.saveToken(uid, tokens.refreshToken);
-    return { ...tokens, userData: DataService.clientData(userData) };
+    return { ...tokens, userData: DataService.clientData(dbData) };
   },
 
   async logout(uid) {
@@ -61,9 +41,9 @@ const UserService = {
     if (!refreshToken) {
       throw new Error('This user is not found.');
     }
-    const tokenData = TokenService.validateRefreshToken(refreshToken);
-    const userData = await DbService.getData('Users', tokenData.uid);
-    const tokens = TokenService.generateTokens(DataService.tokenData(userData));
+    const { uid } = TokenService.validateRefreshToken(refreshToken);
+    const userData = await DbService.getData('Users', uid);
+    const tokens = TokenService.generateTokens({ uid: userData.uid });
     await TokenService.saveToken(userData.uid, tokens.refreshToken);
     return { tokens, userData: DataService.clientData(userData) };
   },
@@ -72,6 +52,11 @@ const UserService = {
     await DbService.setData('Users', uid, data);
     const userData = await DbService.getData('Users', uid);
     return DataService.clientData(userData);
+  },
+
+  async updatePassword(uid, password) {
+    const hashPassword = bcrypt.hashSync(password, 5);
+    return await this.updateUserData(uid, { password: hashPassword });
   },
 };
 

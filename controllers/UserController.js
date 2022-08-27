@@ -1,3 +1,5 @@
+import DataService from '../services/DataService.js';
+import DbService from '../services/DbService.js';
 import UserService from '../services/UserService.js';
 
 const UserController = {
@@ -12,8 +14,8 @@ const UserController = {
 
   async signIn(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const userData = await UserService.signIn(email, password);
+      const uid = req.headers.uid;
+      const userData = await UserService.signIn(uid);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -38,7 +40,9 @@ const UserController = {
 
   async verifyToken(req, res, next) {
     try {
-      return res.json(req.userData);
+      const uid = req.headers.uid;
+      const dbData = await DbService.getData('Users', uid);
+      return res.json(DataService.clientData(dbData));
     } catch (error) {
       return res.status(401).json(error.message);
     }
@@ -61,9 +65,26 @@ const UserController = {
 
   async updateUserData(req, res, next) {
     try {
-      const { uid } = req.userData;
+      const uid = req.headers.uid;
       const userData = await UserService.updateUserData(uid, req.body);
       return res.json(userData);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async updateAuthData(req, res, next) {
+    try {
+      const uid = req.headers.uid;
+      const { email, newPassword } = req.body;
+      if (email) {
+        const userData = await UserService.updateUserData(uid, { email });
+        return res.json(userData);
+      }
+      if (newPassword) {
+        await UserService.updatePassword(uid, newPassword);
+        return res.json('Password changed successfully.');
+      }
     } catch (error) {
       return res.status(400).json(error.message);
     }

@@ -7,8 +7,12 @@ const DbService = {
   },
 
   async getData(coll, doc) {
-    const data = await db.collection(coll).doc(doc).get();
-    return data.data();
+    if (doc) {
+      const data = await db.collection(coll).doc(doc).get();
+      return data.data();
+    }
+    const data = await db.collection(coll).get();
+    return data;
   },
 
   async searchData(coll, key, operator, value) {
@@ -29,6 +33,16 @@ const DbService = {
       .doc(doc)
       .update({
         [key]: fieldValue.delete(),
+      });
+    return;
+  },
+
+  async updateDataInArray(coll, doc, key, data) {
+    await db
+      .collection(coll)
+      .doc(doc)
+      .update({
+        [key]: fieldValue.arrayUnion(data),
       });
     return;
   },

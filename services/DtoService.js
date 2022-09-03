@@ -1,9 +1,9 @@
-const DataService = {
-  clientData(data) {
+const DtoService = {
+  userDto(data) {
     delete data.password;
     delete data.refreshToken;
     return data;
   },
 };
 
-export default DataService;
+export default DtoService;

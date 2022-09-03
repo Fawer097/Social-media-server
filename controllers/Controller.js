@@ -1,4 +1,4 @@
-import DataService from '../services/DataService.js';
+import DtoService from '../services/DtoService.js';
 import DbService from '../services/DbService.js';
 import UserService from '../services/UserService.js';
 
@@ -14,7 +14,7 @@ const UserController = {
 
   async signIn(req, res, next) {
     try {
-      const uid = req.headers.uid;
+      const { uid } = req.headers;
       const userData = await UserService.signIn(uid);
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -40,9 +40,9 @@ const UserController = {
 
   async verifyToken(req, res, next) {
     try {
-      const uid = req.headers.uid;
+      const { uid } = req.headers;
       const dbData = await DbService.getData('Users', uid);
-      return res.json(DataService.clientData(dbData));
+      return res.json(DtoService.userDto(dbData));
     } catch (error) {
       return res.status(401).json(error.message);
     }
@@ -65,7 +65,7 @@ const UserController = {
 
   async updateUserData(req, res, next) {
     try {
-      const uid = req.headers.uid;
+      const { uid } = req.headers;
       const userData = await UserService.updateUserData(uid, req.body);
       return res.json(userData);
     } catch (error) {
@@ -75,16 +75,47 @@ const UserController = {
 
   async updateAuthData(req, res, next) {
     try {
-      const uid = req.headers.uid;
+      const { uid } = req.headers;
       const { email, newPassword } = req.body;
       if (email) {
         const userData = await UserService.updateUserData(uid, { email });
-        return res.json(userData);
+        return res.json(userData.email);
       }
       if (newPassword) {
         await UserService.updatePassword(uid, newPassword);
         return res.json('Password changed successfully.');
       }
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async searchUsers(req, res, next) {
+    try {
+      const { q } = req.query;
+      const users = await UserService.searchUsers(q);
+      return res.json(users);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async getOneUserData(req, res, next) {
+    try {
+      const uid = req.headers.data;
+      const userData = await UserService.getOneUserData(uid);
+      return res.json(userData);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async friendRequest(req, res, next) {
+    try {
+      const sendUid = req.headers.uid;
+      const { acceptUid } = req.body;
+      const userData = await UserService.friendsRequest(sendUid, acceptUid);
+      return res.json(userData);
     } catch (error) {
       return res.status(400).json(error.message);
     }

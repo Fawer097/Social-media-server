@@ -6,7 +6,7 @@ const UserController = {
   async signUp(req, res, next) {
     try {
       await UserService.signUp(req.body);
-      return res.status(201).json();
+      return res.status(201).end();
     } catch (error) {
       return res.status(400).json(error.message);
     }
@@ -104,17 +104,6 @@ const UserController = {
     try {
       const uid = req.headers.data;
       const userData = await UserService.getOneUserData(uid);
-      return res.json(userData);
-    } catch (error) {
-      return res.status(400).json(error.message);
-    }
-  },
-
-  async friendRequest(req, res, next) {
-    try {
-      const sendUid = req.headers.uid;
-      const { acceptUid } = req.body;
-      const userData = await UserService.friendsRequest(sendUid, acceptUid);
       return res.json(userData);
     } catch (error) {
       return res.status(400).json(error.message);

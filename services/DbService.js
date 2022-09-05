@@ -46,6 +46,16 @@ const DbService = {
       });
     return;
   },
+
+  async removeDataInArray(coll, doc, key, data) {
+    await db
+      .collection(coll)
+      .doc(doc)
+      .update({
+        [key]: fieldValue.arrayRemove(data),
+      });
+    return;
+  },
 };
 
 export default DbService;

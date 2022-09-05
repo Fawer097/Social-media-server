@@ -4,6 +4,11 @@ const DtoService = {
     delete data.refreshToken;
     return data;
   },
+
+  friendDto(data) {
+    const { fullName, avatarUrl, uid, city, country } = data;
+    return { fullName, avatarUrl, uid, city, country };
+  },
 };
 
 export default DtoService;

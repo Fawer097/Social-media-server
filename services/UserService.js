@@ -93,25 +93,6 @@ const UserService = {
     const userData = await DbService.searchData('Users', 'uid', '==', uid);
     return DtoService.userDto(userData[0]);
   },
-
-  async friendsRequest(sendUid, acceptUid) {
-    const dbData = await DbService.getData('Users', acceptUid);
-    if (dbData.friendsCandidates && dbData.friendsCandidates.length) {
-      await DbService.updateDataInArray(
-        'Users',
-        acceptUid,
-        'friendsCandidates',
-        sendUid
-      );
-      const { friendsCandidates } = await DbService.getData('Users', acceptUid);
-      return friendsCandidates;
-    }
-    await DbService.setData('Users', acceptUid, {
-      friendsCandidates: [sendUid],
-    });
-    const { friendsCandidates } = await DbService.getData('Users', acceptUid);
-    return friendsCandidates;
-  },
 };
 
 export default UserService;

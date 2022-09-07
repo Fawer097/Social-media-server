@@ -33,12 +33,20 @@ router.post(
   UserController.updateAuthData
 );
 router.get('/users/searchUsers', verifyToken, UserController.searchUsers);
-router.get('/users/oneUser', verifyToken, UserController.getOneUserData);
-router.post('/friends/request', verifyToken, FriendsController.friendsRequest);
-router.get(
-  '/friends/friendsData',
+router.get('/users/otherUser', verifyToken, UserController.otherUserData);
+router.post(
+  '/friends/friendRequest',
   verifyToken,
-  FriendsController.getFriendsData
+  FriendsController.friendsRequest
 );
+router.get('/friends/allData', verifyToken, FriendsController.allFriendsData);
+router.get('/friends/friendsData', verifyToken, FriendsController.friendsData);
+router.get(
+  '/friends/candidatesData',
+  verifyToken,
+  FriendsController.candidatesData
+);
+router.post('/messager/message', verifyToken, UserController.setMessage);
+router.get('/messager/chatsData', verifyToken, UserController.chatsData);
 
 export default router;

@@ -5,7 +5,7 @@ const DtoService = {
     return data;
   },
 
-  friendDto(data) {
+  userCardDto(data) {
     const { fullName, avatarUrl, uid, city, country } = data;
     return { fullName, avatarUrl, uid, city, country };
   },

@@ -20,7 +20,7 @@ const DbService = {
     if (data.empty) {
       return null;
     }
-    let result = [];
+    const result = [];
     data.forEach((data) => {
       result.push(data.data());
     });

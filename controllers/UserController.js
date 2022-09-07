@@ -1,6 +1,7 @@
 import DtoService from '../services/DtoService.js';
 import DbService from '../services/DbService.js';
 import UserService from '../services/UserService.js';
+import MessageService from '../services/MessageService.js';
 
 const UserController = {
   async signUp(req, res, next) {
@@ -100,11 +101,32 @@ const UserController = {
     }
   },
 
-  async getOneUserData(req, res, next) {
+  async otherUserData(req, res, next) {
     try {
       const uid = req.headers.data;
-      const userData = await UserService.getOneUserData(uid);
+      const userData = await UserService.getOtherUserData(uid);
       return res.json(userData);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async setMessage(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const { receiverUid, message } = req.body;
+      await MessageService.setMessage(uid, receiverUid, message);
+      return res.end();
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async chatsData(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const chatsData = await MessageService.getChatsData(uid);
+      return res.json(chatsData);
     } catch (error) {
       return res.status(400).json(error.message);
     }

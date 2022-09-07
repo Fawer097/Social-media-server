@@ -28,6 +28,11 @@ const UserService = {
     };
 
     await DbService.setData('Users', dbData.uid, dbData);
+    await DbService.setData('Friends', dbData.uid, {
+      friends: [],
+      outgoingRequests: [],
+      incomingRequests: [],
+    });
     return;
   },
 
@@ -89,9 +94,19 @@ const UserService = {
     return filterUsers;
   },
 
-  async getOneUserData(uid) {
-    const userData = await DbService.searchData('Users', 'uid', '==', uid);
-    return DtoService.userDto(userData[0]);
+  async getOtherUserData(uid) {
+    const userData = await DbService.getData('Users', uid);
+    return DtoService.userDto(userData);
+  },
+
+  async getUsersCardsData(data) {
+    const uidArr = data.split(',');
+    const usersDataArr = [];
+    for (let uid of uidArr) {
+      const userData = await DbService.getData('Users', uid);
+      usersDataArr.push(DtoService.userCardDto(userData));
+    }
+    return usersDataArr;
   },
 };
 

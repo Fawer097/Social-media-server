@@ -20,39 +20,23 @@ const FriendsService = {
 
   async setIncomingRequests(senderUid, receiverUid) {
     const dbData = await DbService.getData('Friends', receiverUid);
-    if (dbData && dbData.incomingRequests) {
-      await DbService.updateDataInArray(
-        'Friends',
-        receiverUid,
-        'incomingRequests',
-        senderUid
-      );
-      return;
-    }
-    await DbService.setData('Friends', receiverUid, {
-      friends: [],
-      outgoingRequests: [],
-      incomingRequests: [senderUid],
-    });
+    await DbService.updateDataInArray(
+      'Friends',
+      receiverUid,
+      'incomingRequests',
+      senderUid
+    );
     return;
   },
 
   async setOutgoingRequests(senderUid, receiverUid) {
     const dbData = await DbService.getData('Friends', senderUid);
-    if (dbData && dbData.outgoingRequests) {
-      await DbService.updateDataInArray(
-        'Friends',
-        senderUid,
-        'outgoingRequests',
-        receiverUid
-      );
-      return;
-    }
-    await DbService.setData('Friends', senderUid, {
-      friends: [],
-      incomingRequests: [],
-      outgoingRequests: [receiverUid],
-    });
+    await DbService.updateDataInArray(
+      'Friends',
+      senderUid,
+      'outgoingRequests',
+      receiverUid
+    );
     return;
   },
 
@@ -102,21 +86,23 @@ const FriendsService = {
   },
 
   async getFriendsData(uid) {
-    const { incomingRequests, friends } = await DbService.getData(
-      'Friends',
-      uid
-    );
-    const candidatesData = [];
-    const friendsData = [];
-    for (let uid of incomingRequests) {
-      const candidateData = await DbService.getData('Users', uid);
-      candidatesData.push(DtoService.friendDto(candidateData));
-    }
+    const { friends } = await DbService.getData('Friends', uid);
+    const friendsDataArr = [];
     for (let uid of friends) {
-      const friendData = await DbService.getData('Users', uid);
-      friendsData.push(DtoService.friendDto(friendData));
+      const userData = await DbService.getData('Users', uid);
+      friendsDataArr.push(DtoService.userCardDto(userData));
     }
-    return { candidatesData, friendsData };
+    return friendsDataArr;
+  },
+
+  async getCandidatesData(uid) {
+    const { incomingRequests } = await DbService.getData('Friends', uid);
+    const candidatesData = [];
+    for (let uid of incomingRequests) {
+      const userData = await DbService.getData('Users', uid);
+      candidatesData.push(DtoService.userCardDto(userData));
+    }
+    return candidatesData;
   },
 };
 

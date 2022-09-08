@@ -1,20 +1,17 @@
+import { FieldValue } from 'firebase-admin/firestore';
 import DbService from './DbService.js';
-import { fieldValue } from '../firebase/firebaseInit.js';
 import DtoService from './DtoService.js';
 
 const MessageService = {
   async setMessage(senderUid, receiverUid, message) {
-    const { avatarUrl, fullName, uid } = await DbService.getData(
-      'Users',
-      senderUid
-    );
+    const { avatarUrl, fullName } = await DbService.getData('Users', senderUid);
     await DbService.setData('Chats', senderUid, {
       [receiverUid]: {
         [Date.now()]: {
-          createdAt: fieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
           fullName,
           avatarUrl,
-          uid,
+          senderUid,
           message,
         },
       },
@@ -22,10 +19,10 @@ const MessageService = {
     await DbService.setData('Chats', receiverUid, {
       [senderUid]: {
         [Date.now()]: {
-          createdAt: fieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
           fullName,
           avatarUrl,
-          uid,
+          senderUid,
           message,
         },
       },

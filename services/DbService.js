@@ -1,4 +1,5 @@
-import { db, fieldValue } from '../firebase/firebaseInit.js';
+import { db } from '../firebase/firebaseInit.js';
+import { FieldValue } from 'firebase-admin/firestore';
 
 const DbService = {
   async setData(coll, doc, data) {
@@ -32,7 +33,7 @@ const DbService = {
       .collection(coll)
       .doc(doc)
       .update({
-        [key]: fieldValue.delete(),
+        [key]: FieldValue.delete(),
       });
     return;
   },
@@ -42,7 +43,7 @@ const DbService = {
       .collection(coll)
       .doc(doc)
       .update({
-        [key]: fieldValue.arrayUnion(data),
+        [key]: FieldValue.arrayUnion(data),
       });
     return;
   },
@@ -52,7 +53,7 @@ const DbService = {
       .collection(coll)
       .doc(doc)
       .update({
-        [key]: fieldValue.arrayRemove(data),
+        [key]: FieldValue.arrayRemove(data),
       });
     return;
   },

@@ -1,7 +1,7 @@
 import DtoService from '../services/DtoService.js';
 import DbService from '../services/DbService.js';
 import UserService from '../services/UserService.js';
-import MessageService from '../services/MessageService.js';
+import MessagerService from '../services/MessagerService.js';
 
 const UserController = {
   async signUp(req, res, next) {
@@ -115,7 +115,7 @@ const UserController = {
     try {
       const { uid } = req.headers;
       const { receiverUid, message } = req.body;
-      await MessageService.setMessage(uid, receiverUid, message);
+      await MessagerService.setMessage(uid, receiverUid, message);
       return res.end();
     } catch (error) {
       return res.status(400).json(error.message);
@@ -125,7 +125,7 @@ const UserController = {
   async chatsData(req, res, next) {
     try {
       const { uid } = req.headers;
-      const chatsData = await MessageService.getChatsData(uid);
+      const chatsData = await MessagerService.getChatsData(uid);
       return res.json(chatsData);
     } catch (error) {
       return res.status(400).json(error.message);

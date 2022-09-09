@@ -19,7 +19,6 @@ const FriendsService = {
   },
 
   async setIncomingRequests(senderUid, receiverUid) {
-    const dbData = await DbService.getData('Friends', receiverUid);
     await DbService.updateDataInArray(
       'Friends',
       receiverUid,
@@ -30,7 +29,6 @@ const FriendsService = {
   },
 
   async setOutgoingRequests(senderUid, receiverUid) {
-    const dbData = await DbService.getData('Friends', senderUid);
     await DbService.updateDataInArray(
       'Friends',
       senderUid,
@@ -40,7 +38,41 @@ const FriendsService = {
     return;
   },
 
-  async setFriends(senderUid, receiverUid) {
+  async removeOutgoingRequest(senderUid, receiverUid) {
+    await DbService.removeDataInArray(
+      'Friends',
+      receiverUid,
+      'incomingRequests',
+      senderUid
+    );
+
+    await DbService.removeDataInArray(
+      'Friends',
+      senderUid,
+      'outgoingRequests',
+      receiverUid
+    );
+    return;
+  },
+
+  async removeIncomingRequest(senderUid, receiverUid) {
+    await DbService.removeDataInArray(
+      'Friends',
+      senderUid,
+      'incomingRequests',
+      receiverUid
+    );
+
+    await DbService.removeDataInArray(
+      'Friends',
+      receiverUid,
+      'outgoingRequests',
+      senderUid
+    );
+    return;
+  },
+
+  async setFriend(senderUid, receiverUid) {
     await DbService.removeDataInArray(
       'Friends',
       senderUid,
@@ -82,6 +114,26 @@ const FriendsService = {
       'friends',
       senderUid
     );
+    return;
+  },
+
+  async removeFriend(senderUid, receiverUid) {
+    await DbService.removeDataInArray(
+      'Friends',
+      senderUid,
+      'friends',
+      receiverUid
+    );
+
+    await DbService.removeDataInArray(
+      'Friends',
+      receiverUid,
+      'friends',
+      senderUid
+    );
+
+    await this.setIncomingRequests(receiverUid, senderUid);
+    await this.setOutgoingRequests(receiverUid, senderUid);
     return;
   },
 
@@ -99,6 +151,16 @@ const FriendsService = {
     const { incomingRequests } = await DbService.getData('Friends', uid);
     const candidatesData = [];
     for (let uid of incomingRequests) {
+      const userData = await DbService.getData('Users', uid);
+      candidatesData.push(DtoService.userCardDto(userData));
+    }
+    return candidatesData;
+  },
+
+  async getOutgoingCandidatesData(uid) {
+    const { outgoingRequests } = await DbService.getData('Friends', uid);
+    const candidatesData = [];
+    for (let uid of outgoingRequests) {
       const userData = await DbService.getData('Users', uid);
       candidatesData.push(DtoService.userCardDto(userData));
     }

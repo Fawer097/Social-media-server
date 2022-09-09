@@ -4,13 +4,10 @@ import DtoService from './DtoService.js';
 
 const MessageService = {
   async setMessage(senderUid, receiverUid, message) {
-    const { avatarUrl, fullName } = await DbService.getData('Users', senderUid);
     await DbService.setData('Chats', senderUid, {
       [receiverUid]: {
-        [Date.now()]: {
+        [`message${Date.now()}`]: {
           createdAt: FieldValue.serverTimestamp(),
-          fullName,
-          avatarUrl,
           senderUid,
           message,
         },
@@ -18,10 +15,8 @@ const MessageService = {
     });
     await DbService.setData('Chats', receiverUid, {
       [senderUid]: {
-        [Date.now()]: {
+        [`message${Date.now()}`]: {
           createdAt: FieldValue.serverTimestamp(),
-          fullName,
-          avatarUrl,
           senderUid,
           message,
         },
@@ -32,6 +27,9 @@ const MessageService = {
 
   async getChatsData(uid) {
     const chatsData = await DbService.getData('Chats', uid);
+    if (!chatsData) {
+      return [];
+    }
     const interlocutorsUid = Object.keys(chatsData);
     const chatsDataArr = [];
     for (let uid of interlocutorsUid) {

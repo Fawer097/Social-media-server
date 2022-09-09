@@ -40,6 +40,21 @@ router.post(
   verifyToken,
   FriendsController.friendsRequest
 );
+router.post(
+  '/friends/removeOutgoingRequest',
+  verifyToken,
+  FriendsController.removeOutgoingRequest
+);
+router.post(
+  '/friends/removeIncomingRequest',
+  verifyToken,
+  FriendsController.removeIncomingRequest
+);
+router.post(
+  '/friends/removeFriend',
+  verifyToken,
+  FriendsController.removeFriend
+);
 router.get('/friends/allData', verifyToken, FriendsController.allFriendsData);
 router.get('/friends/friendsData', verifyToken, FriendsController.friendsData);
 router.get(
@@ -47,9 +62,21 @@ router.get(
   verifyToken,
   FriendsController.candidatesData
 );
+router.get(
+  '/friends/outgoingCandidatesData',
+  verifyToken,
+  FriendsController.outgoingCandidatesData
+);
 router.post('/messager/message', verifyToken, UserController.setMessage);
 router.get('/messager/chatsData', verifyToken, UserController.chatsData);
 router.post('/posts/createPost', verifyToken, PostsController.createPost);
-router.get('/posts/getPosts', verifyToken, PostsController.getPosts);
+router.get('/posts/userPosts', verifyToken, PostsController.getPosts);
+router.get(
+  '/posts/otherUserPosts',
+  verifyToken,
+  PostsController.getOtherUserPosts
+);
+router.get('/posts/feedPosts', verifyToken, PostsController.feedPosts);
+router.post('/posts/likePost', verifyToken, PostsController.likePost);
 
 export default router;

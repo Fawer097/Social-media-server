@@ -19,8 +19,41 @@ const FriendsController = {
         receiverUid
       );
       if (secondCheck) {
-        await FriendsService.setFriends(senderUid, receiverUid);
+        await FriendsService.setFriend(senderUid, receiverUid);
       }
+      return res.end();
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async removeOutgoingRequest(req, res, next) {
+    try {
+      const senderUid = req.headers.uid;
+      const { receiverUid } = req.body;
+      await FriendsService.removeOutgoingRequest(senderUid, receiverUid);
+      return res.end();
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async removeIncomingRequest(req, res, next) {
+    try {
+      const senderUid = req.headers.uid;
+      const { receiverUid } = req.body;
+      await FriendsService.removeIncomingRequest(senderUid, receiverUid);
+      return res.end();
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async removeFriend(req, res, next) {
+    try {
+      const senderUid = req.headers.uid;
+      const { receiverUid } = req.body;
+      await FriendsService.removeFriend(senderUid, receiverUid);
       return res.end();
     } catch (error) {
       return res.status(400).json(error.message);
@@ -51,6 +84,18 @@ const FriendsController = {
     try {
       const { uid } = req.headers;
       const candidatesData = await FriendsService.getCandidatesData(uid);
+      return res.json(candidatesData);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async outgoingCandidatesData(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const candidatesData = await FriendsService.getOutgoingCandidatesData(
+        uid
+      );
       return res.json(candidatesData);
     } catch (error) {
       return res.status(400).json(error.message);

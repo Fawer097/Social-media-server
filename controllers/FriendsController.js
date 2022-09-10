@@ -1,25 +1,25 @@
-import FriendsService from '../services/FriendsService.js';
-import DbService from '../services/DbService.js';
+import friendsService from '../services/friendsService.js';
+import dbService from '../services/dbService.js';
 
-const FriendsController = {
+const friendsController = {
   async friendsRequest(req, res, next) {
     try {
       const senderUid = req.headers.uid;
       const { receiverUid } = req.body;
-      const firstCheck = await FriendsService.checkFriends(
+      const firstCheck = await friendsService.checkFriends(
         senderUid,
         receiverUid
       );
       if (!firstCheck) {
-        await FriendsService.setIncomingRequests(senderUid, receiverUid);
-        await FriendsService.setOutgoingRequests(senderUid, receiverUid);
+        await friendsService.setIncomingRequests(senderUid, receiverUid);
+        await friendsService.setOutgoingRequests(senderUid, receiverUid);
       }
-      const secondCheck = await FriendsService.checkFriends(
+      const secondCheck = await friendsService.checkFriends(
         senderUid,
         receiverUid
       );
       if (secondCheck) {
-        await FriendsService.setFriend(senderUid, receiverUid);
+        await friendsService.setFriend(senderUid, receiverUid);
       }
       return res.end();
     } catch (error) {
@@ -31,7 +31,7 @@ const FriendsController = {
     try {
       const senderUid = req.headers.uid;
       const { receiverUid } = req.body;
-      await FriendsService.removeOutgoingRequest(senderUid, receiverUid);
+      await friendsService.removeOutgoingRequest(senderUid, receiverUid);
       return res.end();
     } catch (error) {
       return res.status(400).json(error.message);
@@ -42,7 +42,7 @@ const FriendsController = {
     try {
       const senderUid = req.headers.uid;
       const { receiverUid } = req.body;
-      await FriendsService.removeIncomingRequest(senderUid, receiverUid);
+      await friendsService.removeIncomingRequest(senderUid, receiverUid);
       return res.end();
     } catch (error) {
       return res.status(400).json(error.message);
@@ -53,7 +53,7 @@ const FriendsController = {
     try {
       const senderUid = req.headers.uid;
       const { receiverUid } = req.body;
-      await FriendsService.removeFriend(senderUid, receiverUid);
+      await friendsService.removeFriend(senderUid, receiverUid);
       return res.end();
     } catch (error) {
       return res.status(400).json(error.message);
@@ -63,7 +63,7 @@ const FriendsController = {
   async allFriendsData(req, res, next) {
     try {
       const { uid } = req.headers;
-      const allFriendsData = await DbService.getData('Friends', uid);
+      const allFriendsData = await dbService.getData('Friends', uid);
       return res.json(allFriendsData);
     } catch (error) {
       return res.status(400).json(error.message);
@@ -73,7 +73,7 @@ const FriendsController = {
   async friendsData(req, res, next) {
     try {
       const { uid } = req.headers;
-      const friendsData = await FriendsService.getFriendsData(uid);
+      const friendsData = await friendsService.getFriendsData(uid);
       return res.json(friendsData);
     } catch (error) {
       return res.status(400).json(error.message);
@@ -83,7 +83,7 @@ const FriendsController = {
   async candidatesData(req, res, next) {
     try {
       const { uid } = req.headers;
-      const candidatesData = await FriendsService.getCandidatesData(uid);
+      const candidatesData = await friendsService.getCandidatesData(uid);
       return res.json(candidatesData);
     } catch (error) {
       return res.status(400).json(error.message);
@@ -93,7 +93,7 @@ const FriendsController = {
   async outgoingCandidatesData(req, res, next) {
     try {
       const { uid } = req.headers;
-      const candidatesData = await FriendsService.getOutgoingCandidatesData(
+      const candidatesData = await friendsService.getOutgoingCandidatesData(
         uid
       );
       return res.json(candidatesData);
@@ -103,4 +103,4 @@ const FriendsController = {
   },
 };
 
-export default FriendsController;
+export default friendsController;

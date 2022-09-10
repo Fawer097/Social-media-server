@@ -1,7 +1,7 @@
 import { db } from '../firebase/firebaseInit.js';
 import { FieldValue } from 'firebase-admin/firestore';
 
-const DbService = {
+const dbService = {
   async setData(coll, doc, data) {
     await db.collection(coll).doc(doc).set(data, { merge: true });
     return;
@@ -59,4 +59,4 @@ const DbService = {
   },
 };
 
-export default DbService;
+export default dbService;

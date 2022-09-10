@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import DbService from './DbService.js';
+import dbService from './dbService.js';
 
-const TokenService = {
+const tokenService = {
   generateTokens(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
       expiresIn: '30m',
@@ -34,14 +34,14 @@ const TokenService = {
   },
 
   async saveToken(uid, refreshToken) {
-    await DbService.setData('Users', uid, { refreshToken });
+    await dbService.setData('Users', uid, { refreshToken });
     return;
   },
 
   async removeToken(uid) {
-    await DbService.deleteData('Users', uid, 'refreshToken');
+    await dbService.deleteData('Users', uid, 'refreshToken');
     return;
   },
 };
 
-export default TokenService;
+export default tokenService;

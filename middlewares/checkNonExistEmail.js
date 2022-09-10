@@ -1,4 +1,4 @@
-import DbService from '../services/DbService.js';
+import dbService from '../services/dbService.js';
 
 export const checkNonExistEmail = async (req, res, next) => {
   try {
@@ -6,7 +6,7 @@ export const checkNonExistEmail = async (req, res, next) => {
     if (!email) {
       throw new Error('Fill in the email address!');
     }
-    const candidate = await DbService.searchData('Users', 'email', '==', email);
+    const candidate = await dbService.searchData('Users', 'email', '==', email);
     if (!candidate) {
       throw new Error('This user is not found.');
     }

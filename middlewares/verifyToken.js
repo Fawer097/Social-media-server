@@ -1,4 +1,4 @@
-import TokenService from '../services/TokenService.js';
+import tokenService from '../services/tokenService.js';
 
 export const verifyToken = async (req, res, next) => {
   try {
@@ -10,7 +10,7 @@ export const verifyToken = async (req, res, next) => {
     if (!accessToken) {
       throw new Error('User not authorized.');
     }
-    const { uid } = TokenService.validateAccessToken(accessToken);
+    const { uid } = tokenService.validateAccessToken(accessToken);
     req.headers.uid = uid;
     return next();
   } catch (error) {

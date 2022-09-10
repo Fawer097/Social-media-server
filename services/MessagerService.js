@@ -1,10 +1,10 @@
 import { FieldValue } from 'firebase-admin/firestore';
-import DbService from './DbService.js';
-import DtoService from './DtoService.js';
+import dbService from './dbService.js';
+import dtoService from './dtoService.js';
 
-const MessageService = {
+const messagerService = {
   async setMessage(senderUid, receiverUid, message) {
-    await DbService.setData('Chats', senderUid, {
+    await dbService.setData('Chats', senderUid, {
       [receiverUid]: {
         [`message${Date.now()}`]: {
           createdAt: FieldValue.serverTimestamp(),
@@ -13,7 +13,7 @@ const MessageService = {
         },
       },
     });
-    await DbService.setData('Chats', receiverUid, {
+    await dbService.setData('Chats', receiverUid, {
       [senderUid]: {
         [`message${Date.now()}`]: {
           createdAt: FieldValue.serverTimestamp(),
@@ -26,18 +26,18 @@ const MessageService = {
   },
 
   async getChatsData(uid) {
-    const chatsData = await DbService.getData('Chats', uid);
+    const chatsData = await dbService.getData('Chats', uid);
     if (!chatsData) {
       return [];
     }
     const interlocutorsUid = Object.keys(chatsData);
     const chatsDataArr = [];
     for (let uid of interlocutorsUid) {
-      const userData = await DbService.getData('Users', uid);
-      chatsDataArr.push(DtoService.userCardDto(userData));
+      const userData = await dbService.getData('Users', uid);
+      chatsDataArr.push(dtoService.userCardDto(userData));
     }
     return chatsDataArr;
   },
 };
 
-export default MessageService;
+export default messagerService;

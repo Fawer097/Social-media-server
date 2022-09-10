@@ -1,11 +1,11 @@
-import DbService from '../services/DbService.js';
+import dbService from '../services/dbService.js';
 import bcrypt from 'bcrypt';
 
 export const checkPassword = async (req, res, next) => {
   try {
     const { password } = req.body;
     const uid = req.headers.uid;
-    const dbData = await DbService.getData('Users', uid);
+    const dbData = await dbService.getData('Users', uid);
     const hashPassword = dbData.password;
     const validPassword = bcrypt.compareSync(password, hashPassword);
     if (!validPassword) {

@@ -1,4 +1,4 @@
-const DtoService = {
+const dtoService = {
   userDto(data) {
     delete data.password;
     delete data.refreshToken;
@@ -11,4 +11,4 @@ const DtoService = {
   },
 };
 
-export default DtoService;
+export default dtoService;

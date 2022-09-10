@@ -1,10 +1,9 @@
 import { FieldValue } from 'firebase-admin/firestore';
-import { db } from '../firebase/firebaseInit.js';
-import DbService from './DbService.js';
+import dbService from './dbService.js';
 
-const PostsService = {
+const postsService = {
   async createPost(uid, data) {
-    await DbService.setData('Posts', uid, {
+    await dbService.setData('Posts', uid, {
       [`post${Date.now()}`]: {
         createdAt: FieldValue.serverTimestamp(),
         postId: Date.now(),
@@ -18,7 +17,7 @@ const PostsService = {
   },
 
   async getPosts(uid) {
-    const posts = await DbService.getData('Posts', uid);
+    const posts = await dbService.getData('Posts', uid);
     if (!posts) {
       return [];
     }
@@ -26,7 +25,7 @@ const PostsService = {
   },
 
   async getFeedPosts(uid) {
-    const { friends } = await DbService.getData('Friends', uid);
+    const { friends } = await dbService.getData('Friends', uid);
     const myPosts = await this.getPosts(uid);
     const postsArr = [];
     postsArr.push(...myPosts);
@@ -37,7 +36,7 @@ const PostsService = {
     }
 
     for (let post of postsArr) {
-      const { avatarUrl, fullName } = await DbService.getData(
+      const { avatarUrl, fullName } = await dbService.getData(
         'Users',
         post.uid
       );
@@ -48,7 +47,17 @@ const PostsService = {
   },
 
   async likePost(uid, postId, ownerPost) {
-    await DbService.updateDataInArray(
+    await dbService.updateDataInArray(
+      'Posts',
+      ownerPost,
+      `post${postId}.likes`,
+      uid
+    );
+    return;
+  },
+
+  async removeLikePost(uid, postId, ownerPost) {
+    await dbService.removeDataInArray(
       'Posts',
       ownerPost,
       `post${postId}.likes`,
@@ -58,4 +67,4 @@ const PostsService = {
   },
 };
 
-export default PostsService;
+export default postsService;

@@ -1,77 +1,21 @@
-import { userDataValidation } from '../validation/validation.js';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-import TokenService from './TokenService.js';
-import DbService from './DbService.js';
-import DtoService from './DtoService.js';
+import dbService from './dbService.js';
+import dtoService from './dtoService.js';
 
-const UserService = {
-  async signUp(data) {
-    const { error } = userDataValidation(data);
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (data.createPassword !== data.confirmPassword) {
-      throw new Error('Passwords do not match.');
-    }
-
-    const hashPassword = bcrypt.hashSync(data.confirmPassword, 5);
-    delete data.createPassword;
-    delete data.confirmPassword;
-    const dbData = {
-      ...data,
-      uid: uuidv4(),
-      fullName: `${data.firstName} ${data.lastName}`,
-      avatarUrl: '',
-      password: hashPassword,
-    };
-
-    await DbService.setData('Users', dbData.uid, dbData);
-    await DbService.setData('Friends', dbData.uid, {
-      friends: [],
-      outgoingRequests: [],
-      incomingRequests: [],
-    });
-    return;
-  },
-
-  async signIn(uid) {
-    const dbData = await DbService.getData('Users', uid);
-    const tokens = TokenService.generateTokens({ uid: dbData.uid });
-    await TokenService.saveToken(uid, tokens.refreshToken);
-    return { ...tokens, userData: DtoService.userDto(dbData) };
-  },
-
-  async logout(uid) {
-    await TokenService.removeToken(uid);
-    return;
-  },
-
-  async refreshTokens(refreshToken) {
-    if (!refreshToken) {
-      throw new Error('This user is not found.');
-    }
-    const { uid } = TokenService.validateRefreshToken(refreshToken);
-    const userData = await DbService.getData('Users', uid);
-    const tokens = TokenService.generateTokens({ uid: userData.uid });
-    await TokenService.saveToken(userData.uid, tokens.refreshToken);
-    return { tokens, userData: DtoService.userDto(userData) };
-  },
-
+const userService = {
   async updateUserData(uid, data) {
     if (data.firstName && data.lastName) {
-      await DbService.setData('Users', uid, {
+      await dbService.setData('Users', uid, {
         ...data,
         fullName: `${data.firstName} ${data.lastName}`,
       });
     } else {
-      await DbService.setData('Users', uid, {
+      await dbService.setData('Users', uid, {
         ...data,
       });
     }
-    const userData = await DbService.getData('Users', uid);
-    return DtoService.userDto(userData);
+    const userData = await dbService.getData('Users', uid);
+    return dtoService.userDto(userData);
   },
 
   async updatePassword(uid, password) {
@@ -80,10 +24,10 @@ const UserService = {
   },
 
   async searchUsers(query) {
-    const usersData = await DbService.getData('Users');
+    const usersData = await dbService.getData('Users');
     const usersArr = [];
     usersData.forEach((user) => {
-      usersArr.push(DtoService.userDto(user.data()));
+      usersArr.push(dtoService.userDto(user.data()));
     });
     const filterUsers = usersArr.filter((user) =>
       user.fullName
@@ -95,19 +39,19 @@ const UserService = {
   },
 
   async getOtherUserData(uid) {
-    const userData = await DbService.getData('Users', uid);
-    return DtoService.userDto(userData);
+    const userData = await dbService.getData('Users', uid);
+    return dtoService.userDto(userData);
   },
 
   async getUsersCardsData(data) {
     const uidArr = data.split(',');
     const usersDataArr = [];
     for (let uid of uidArr) {
-      const userData = await DbService.getData('Users', uid);
-      usersDataArr.push(DtoService.userCardDto(userData));
+      const userData = await dbService.getData('Users', uid);
+      usersDataArr.push(dtoService.userCardDto(userData));
     }
     return usersDataArr;
   },
 };
 
-export default UserService;
+export default userService;

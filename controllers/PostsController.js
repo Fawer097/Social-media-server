@@ -5,8 +5,30 @@ const postsController = {
     try {
       const { uid } = req.headers;
       const data = req.body;
-      await postsService.createPost(uid, data);
-      return res.end();
+      const posts = await postsService.createPost(uid, data);
+      return res.json(posts);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async deletePost(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const { postId } = req.body;
+      const posts = await postsService.deletePost(uid, postId);
+      return res.json(posts);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async updatePost(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const data = req.body;
+      const post = await postsService.updatePost(uid, data);
+      return res.json(post);
     } catch (error) {
       return res.status(400).json(error.message);
     }
@@ -46,19 +68,65 @@ const postsController = {
     try {
       const { uid } = req.headers;
       const { postId, ownerPost } = req.body;
-      await postsService.likePost(uid, postId, ownerPost);
-      return res.end();
+      const postData = await postsService.likePost(uid, postId, ownerPost);
+      return res.json(postData);
     } catch (error) {
       return res.status(400).json(error.message);
     }
   },
 
-  async removeLikePost(req, res, next) {
+  async deleteLikePost(req, res, next) {
     try {
       const { uid } = req.headers;
       const { postId, ownerPost } = req.body;
-      await postsService.removeLikePost(uid, postId, ownerPost);
-      return res.end();
+      const postData = await postsService.deleteLikePost(
+        uid,
+        postId,
+        ownerPost
+      );
+      return res.json(postData);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async createComment(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const data = req.body;
+      const comments = await postsService.createComment(uid, data);
+      return res.json(comments);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async updateComment(req, res, next) {
+    try {
+      const { uid } = req.headers;
+      const data = req.body;
+      const comment = await postsService.updateComment(uid, data);
+      return res.json(comment);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async deleteComment(req, res, next) {
+    try {
+      const data = req.body;
+      const comments = await postsService.deleteComment(data);
+      return res.json(comments);
+    } catch (error) {
+      return res.status(400).json(error.message);
+    }
+  },
+
+  async getComments(req, res, next) {
+    try {
+      const { owneruid, postid } = req.headers;
+      const comments = await postsService.getComments(owneruid, postid);
+      return res.json(comments);
     } catch (error) {
       return res.status(400).json(error.message);
     }

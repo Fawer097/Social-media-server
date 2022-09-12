@@ -4,7 +4,7 @@ import dbService from './dbService.js';
 const tokenService = {
   generateTokens(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: '30m',
+      expiresIn: '1h',
     });
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
       expiresIn: '30d',

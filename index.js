@@ -7,6 +7,7 @@ import authRouter from './router/authRouter.js';
 import userRouter from './router/userRouter.js';
 import friendsRouter from './router/friendsRouter.js';
 import messagerRouter from './router/messagerRouter.js';
+import galleryRouter from './router/galleryRouter.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -25,6 +26,7 @@ app.use('/api', userRouter);
 app.use('/api', friendsRouter);
 app.use('/api', messagerRouter);
 app.use('/api', postRouter);
+app.use('/api', galleryRouter);
 
 const start = () => {
   try {

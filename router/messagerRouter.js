@@ -9,10 +9,16 @@ messagerRouter.post(
   verifyToken,
   messagerController.setMessage
 );
-messagerRouter.get(
-  '/messager/chatsData',
+messagerRouter.post(
+  '/messager/deleteMessage',
   verifyToken,
-  messagerController.chatsData
+  messagerController.deleteMessage
+);
+
+messagerRouter.post(
+  '/messager/deleteChat',
+  verifyToken,
+  messagerController.deleteChat
 );
 
 export default messagerRouter;

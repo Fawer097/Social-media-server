@@ -1,42 +1,54 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import dbService from './dbService.js';
 import dtoService from './dtoService.js';
+import { db } from '../firebase/firebaseInit.js';
 
 const messagerService = {
-  async setMessage(senderUid, receiverUid, message) {
+  async setMessage(senderUid, receiverUid, data) {
+    const messageId = Date.now();
     await dbService.setData('Chats', senderUid, {
       [receiverUid]: {
-        [`message${Date.now()}`]: {
+        [`message${messageId}`]: {
           createdAt: FieldValue.serverTimestamp(),
           senderUid,
-          message,
+          receiverUid,
+          messageId,
+          ...data,
         },
       },
     });
     await dbService.setData('Chats', receiverUid, {
       [senderUid]: {
-        [`message${Date.now()}`]: {
+        [`message${messageId}`]: {
           createdAt: FieldValue.serverTimestamp(),
           senderUid,
-          message,
+          receiverUid,
+          messageId,
+          ...data,
         },
       },
     });
     return;
   },
 
-  async getChatsData(uid) {
-    const chatsData = await dbService.getData('Chats', uid);
-    if (!chatsData) {
-      return [];
-    }
-    const interlocutorsUid = Object.keys(chatsData);
-    const chatsDataArr = [];
-    for (let uid of interlocutorsUid) {
-      const userData = await dbService.getData('Users', uid);
-      chatsDataArr.push(dtoService.userCardDto(userData));
-    }
-    return chatsDataArr;
+  async deleteMessage(senderUid, receiverUid, messageId) {
+    await db
+      .collection('Chats')
+      .doc(senderUid)
+      .update({
+        [`${receiverUid}.message${messageId}`]: FieldValue.delete(),
+      });
+
+    await db
+      .collection('Chats')
+      .doc(receiverUid)
+      .update({ [`${senderUid}.message${messageId}`]: FieldValue.delete() });
+    return;
+  },
+
+  async deleteChat(uid, interlocutor) {
+    await dbService.deleteData('Chats', uid, interlocutor);
+    return;
   },
 };
 

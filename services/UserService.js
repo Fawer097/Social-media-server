@@ -24,6 +24,7 @@ const userService = {
   },
 
   async searchUsers(query) {
+    const regexp = /\s+/g;
     const usersData = await dbService.getData('Users');
     const usersArr = [];
     usersData.forEach((user) => {
@@ -32,7 +33,7 @@ const userService = {
     const filterUsers = usersArr.filter((user) =>
       user.fullName
         .toLowerCase()
-        .replace(/\s+/g, '')
+        .replace(regexp, '')
         .includes(query.toLowerCase().replace(/\s+/g, ''))
     );
     return filterUsers;

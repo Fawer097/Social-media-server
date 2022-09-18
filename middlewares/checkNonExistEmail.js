@@ -8,7 +8,7 @@ export const checkNonExistEmail = async (req, res, next) => {
     }
     const candidate = await dbService.searchData('Users', 'email', '==', email);
     if (!candidate) {
-      throw new Error('This user is not found.');
+      throw new Error('This user is not found!');
     }
     req.headers.uid = candidate[0].uid;
     return next();

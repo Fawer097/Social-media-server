@@ -60,11 +60,11 @@ const friendsController = {
     }
   },
 
-  async allFriendsData(req, res, next) {
+  async friendsUid(req, res, next) {
     try {
-      const { uid } = req.headers;
-      const allFriendsData = await dbService.getData('Friends', uid);
-      return res.json(allFriendsData);
+      const uid = req.headers.data;
+      const friendsUid = await dbService.getData('Friends', uid);
+      return res.json(friendsUid);
     } catch (error) {
       return res.status(400).json(error.message);
     }

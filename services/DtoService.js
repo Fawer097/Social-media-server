@@ -6,8 +6,8 @@ const dtoService = {
   },
 
   userCardDto(data) {
-    const { fullName, avatarUrl, uid, city, country } = data;
-    return { fullName, avatarUrl, uid, city, country };
+    const { fullName, avatarUrl, uid, city, country, gender } = data;
+    return { fullName, avatarUrl, uid, city, country, gender };
   },
 };
 

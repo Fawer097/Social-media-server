@@ -8,7 +8,7 @@ export const checkExistEmail = async (req, res, next) => {
     }
     const candidate = await dbService.searchData('Users', 'email', '==', email);
     if (candidate) {
-      throw new Error('This email address is already in use.');
+      throw new Error('This email address is already in use!');
     }
     return next();
   } catch (error) {

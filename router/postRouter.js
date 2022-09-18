@@ -8,11 +8,6 @@ postRouter.post('/posts/createPost', verifyToken, postsController.createPost);
 postRouter.post('/posts/deletePost', verifyToken, postsController.deletePost);
 postRouter.post('/posts/updatePost', verifyToken, postsController.updatePost);
 postRouter.get('/posts/userPosts', verifyToken, postsController.getPosts);
-postRouter.get(
-  '/posts/otherUserPosts',
-  verifyToken,
-  postsController.getOtherUserPosts
-);
 postRouter.get('/posts/feedPosts', verifyToken, postsController.feedPosts);
 postRouter.post('/posts/likePost', verifyToken, postsController.likePost);
 postRouter.post(

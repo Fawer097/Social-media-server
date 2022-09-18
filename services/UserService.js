@@ -34,7 +34,7 @@ const userService = {
       user.fullName
         .toLowerCase()
         .replace(regexp, '')
-        .includes(query.toLowerCase().replace(/\s+/g, ''))
+        .includes(query.toLowerCase().replace(regexp, ''))
     );
     return filterUsers;
   },
@@ -42,16 +42,6 @@ const userService = {
   async getOtherUserData(uid) {
     const userData = await dbService.getData('Users', uid);
     return dtoService.userDto(userData);
-  },
-
-  async getUsersCardsData(data) {
-    const uidArr = data.split(',');
-    const usersDataArr = [];
-    for (let uid of uidArr) {
-      const userData = await dbService.getData('Users', uid);
-      usersDataArr.push(dtoService.userCardDto(userData));
-    }
-    return usersDataArr;
   },
 };
 

@@ -36,16 +36,6 @@ const postsController = {
 
   async getPosts(req, res, next) {
     try {
-      const { uid } = req.headers;
-      const posts = await postsService.getPosts(uid);
-      return res.json(posts);
-    } catch (error) {
-      return res.status(400).json(error.message);
-    }
-  },
-
-  async getOtherUserPosts(req, res, next) {
-    try {
       const uid = req.headers.data;
       const posts = await postsService.getPosts(uid);
       return res.json(posts);

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import tokenService from './tokenService.js';
 import { userDataValidation } from '../validation/validation.js';
 import dtoService from './dtoService.js';
+import bcrypt from 'bcrypt';
 
 const authService = {
   async signUp(data) {

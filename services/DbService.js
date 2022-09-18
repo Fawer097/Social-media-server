@@ -29,12 +29,16 @@ const dbService = {
   },
 
   async deleteData(coll, doc, key) {
-    await db
-      .collection(coll)
-      .doc(doc)
-      .update({
-        [key]: FieldValue.delete(),
-      });
+    if (key) {
+      await db
+        .collection(coll)
+        .doc(doc)
+        .update({
+          [key]: FieldValue.delete(),
+        });
+      return;
+    }
+    await db.collection(coll).doc(doc).delete();
     return;
   },
 

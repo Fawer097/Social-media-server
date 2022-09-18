@@ -25,9 +25,9 @@ userRouter.post(
   friendsController.removeFriend
 );
 userRouter.get(
-  '/friends/allData',
+  '/friends/friendsUid',
   verifyToken,
-  friendsController.allFriendsData
+  friendsController.friendsUid
 );
 userRouter.get(
   '/friends/friendsData',

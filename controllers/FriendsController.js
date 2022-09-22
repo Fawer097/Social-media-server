@@ -72,7 +72,7 @@ const friendsController = {
 
   async friendsData(req, res, next) {
     try {
-      const { uid } = req.headers;
+      const uid = req.headers.data;
       const friendsData = await friendsService.getFriendsData(uid);
       return res.json(friendsData);
     } catch (error) {
